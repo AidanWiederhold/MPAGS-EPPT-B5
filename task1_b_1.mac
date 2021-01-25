@@ -1,0 +1,8 @@
+/run/initialize
+# task b_1
+/B5/detector/armAngle 0. deg
+/B5/field/value 0.25 tesla
+/B5/generator/momentum 100. GeV
+/gun/particle mu+
+/run/beamOn 1000
+
