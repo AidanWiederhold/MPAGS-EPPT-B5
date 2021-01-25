@@ -66,7 +66,7 @@ def FWHM(n, bins):
     lower_edge = bins[candidates[0]]
     upper_edge = bins[candidates[-1]]
     print(candidates, lower_edge, upper_edge)
-    return 2*bin_width*(candidates[-1]-candidates[0])/(1e9)
+    return 2*bin_width*(candidates[-1]-candidates[0]-1)/(1e9)
 
 tracks = track_reconstruction()
 momenta = []
