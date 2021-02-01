@@ -10,7 +10,7 @@ parser = argparse.ArgumentParser(description="Applies preselection cuts", format
 parser.add_argument('--task', type=str, default ="a", help='Select the task this data corresponds to.')
 args = parser.parse_args()
 
-tasks = {"a": {"B":0.5, "range": [0,1e10]}, "b_1": {"B": 0.25, "range": [0,1e10]}, "b_2": {"B":1, "range": [0,2e10]}, "c_1": {"B":0.5, "range": [0,1e10]}, "c_2": {"B":0.5, "range": [0,1e10]}}
+tasks = {"a": {"B":0.5, "range": [0,200]}, "b_1": {"B": 0.25, "range": [0,200]}, "b_2": {"B":1, "range": [0,200]}, "c_1": {"B":0.5, "range": [0,400]}, "c_2": {"B":0.5, "range": [0,400]}}
 n_bins = 80
 bin_width = tasks[args.task]["range"][1]/n_bins
 
@@ -19,7 +19,7 @@ bin_width = tasks[args.task]["range"][1]/n_bins
 B = tasks[args.task]["B"]
 plot_range = tasks[args.task]["range"]
 #q = 1.60217662/(1e19)
-q=3*(10**8)/(10**9) # Since we want GeV
+q=3*(10**8)/(10**9) # Since we want GeV/c
 L=1 # separation between the drift chambers
 delta_z = 0.5 # separation between the layers in the drift chambers
 mag_left_side = 4.5 # signed distance between start of first chamber and start of mag
@@ -101,7 +101,7 @@ for event in tree:
     if len(event.Dc1HitsVector_x)==5 and len(event.Dc2HitsVector_x)==5:
         m1,c1,m2,c2 = track_reconstruction(event)
         m = momentum(m1,c1,m2,c2)
-        if abs(m)<175 and abs(m)>25: momenta.append(abs(m))
+        if abs(m)>plot_range[0] and abs(m)<plot_range[1]: momenta.append(abs(m))
 
 
 #for m in momenta:
