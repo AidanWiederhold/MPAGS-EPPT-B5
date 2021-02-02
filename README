@@ -1,4 +1,4 @@
-To view my summary of Task 1 please follow this link: https://www.overleaf.com/read/gsxhrfgsbcqd
+To view my summary of the momentum measurement please follow this link: https://www.overleaf.com/read/gsxhrfgsbcqd
 
 
 $Id: README 103553 2017-04-18 09:00:54Z gcosmo $
@@ -8,51 +8,51 @@ $Id: README 103553 2017-04-18 09:00:54Z gcosmo $
     =========================================================
 
                        Extended Example B5
-                       -------------------- 
+                       --------------------
 
-  Example B5 implements a double-arm spectrometer with wire chambers, 
-  hodoscopes and calorimeters.  Event simulation and collection are 
+  Example B5 implements a double-arm spectrometer with wire chambers,
+  hodoscopes and calorimeters.  Event simulation and collection are
   enabled, as well as event display and analysis.
 
 
   1- GEOMETRY
 
-   The spectrometer consists of two detector arms 
-   (see B5DetectorConstruction).  One arm provides 
-   position and timing information of the incident particle while the 
+   The spectrometer consists of two detector arms
+   (see B5DetectorConstruction).  One arm provides
+   position and timing information of the incident particle while the
    other collects position, timing and energy information of the particle
-   after it has been deflected by a magnetic field centered at the 
+   after it has been deflected by a magnetic field centered at the
    spectrometer pivot point.
- 
+
      - First arm:  box filled with air, also containing:
 
          1 hodoscope (15 vertical strips of plastic scintillator)
-         1 drift chamber (5 horizontal argon gas layers with a 
+         1 drift chamber (5 horizontal argon gas layers with a
                           "virtual wire" at the center of each layer)
 
      - Second arm:  box filled with air, also containing:
 
          1 hodoscope (25 vertical strips of plastic scintillator)
-         1 drift chamber (5 horizontal argon gas layers with a 
+         1 drift chamber (5 horizontal argon gas layers with a
                           "virtual wire" at the center of each layer)
-         1 electromagnetic calorimeter: 
+         1 electromagnetic calorimeter:
                a box sub-divided along x,y and z
-               axes into cells of CsI 
-         1 hadronic calorimeter: 
+               axes into cells of CsI
+         1 hadronic calorimeter:
                a box sub-divided along x,y, and z axes
-               into cells of lead, with a layer of 
-               plastic scintillator placed at the center 
+               into cells of lead, with a layer of
+               plastic scintillator placed at the center
                of each cell
-         
+
       - Magnetic field region: air-filled cylinder which contains
                               the field (see B5MagneticField)
 
-           The maximum step limit in the magnetic field region is also set 
+           The maximum step limit in the magnetic field region is also set
            via the G4UserLimits class in a similar way as in Example B2.
-           
+
    The rotation angle of the second arm and the magnetic field value
-   can be set via the interactive command defined using the G4GenericMessenger 
-   class.                      
+   can be set via the interactive command defined using the G4GenericMessenger
+   class.
 
   2- PHYSICS
 
@@ -64,44 +64,44 @@ $Id: README 103553 2017-04-18 09:00:54Z gcosmo $
 
    B5ActionInitialization class
    instantiates and registers to Geant4 kernel all user action classes.
-   
+
    While in sequential mode the action classes are instatiated just once,
    via invoking the method:
-      B5ActionInitialization::Build() 
+      B5ActionInitialization::Build()
    in multi-threading mode the same method is invoked for each thread worker
    and so all user action classes are defined thread-local.
 
-   A run action class is instantiated both thread-local 
+   A run action class is instantiated both thread-local
    and global that's why its instance is created also in the method
-      B5ActionInitialization::BuildForMaster() 
+      B5ActionInitialization::BuildForMaster()
    which is invoked only in multi-threading mode.
 
   4- PRIMARY GENERATOR
 
-   The primary generator action class employs the G4ParticleGun. 
-   The primary kinematics consists of a single particle which is 
-   is sent in the direction of the first spectrometer arm. 
+   The primary generator action class employs the G4ParticleGun.
+   The primary kinematics consists of a single particle which is
+   is sent in the direction of the first spectrometer arm.
 
-   The type of the particle and its several properties can be changed 
+   The type of the particle and its several properties can be changed
    via the  G4 built-in commands of  the G4ParticleGun class or
    this example command defined using the G4GenericMessenger class.
-       
-  
+
+
   5- EVENT
 
-   An event consists of the generation of a single particle which is 
-   transported through the first spectrometer arm.  Here, a scintillator 
+   An event consists of the generation of a single particle which is
+   transported through the first spectrometer arm.  Here, a scintillator
    hodoscope records the reference time of the particle before it passes
-   through a drift chamber where the particle position is measured. 
+   through a drift chamber where the particle position is measured.
    Momentum analysis is performed as the particle passes through a magnetic
-   field at the spectrometer pivot and then into the second spectrometer 
+   field at the spectrometer pivot and then into the second spectrometer
    arm.  In the second arm, the particle passes through another hodoscope
    and drift chamber before interacting in the electromagnetic calorimeter.
-   Here it is likely that particles will induce electromagnetic showers.  
-   The shower energy is recorded in a three-dimensional array of CsI 
-   crystals.  Secondary particles from the shower, as well as primary 
-   particles which do not interact in the CsI crystals, pass into the 
-   hadronic calorimeter.  Here, the remaining energy is collected in a 
+   Here it is likely that particles will induce electromagnetic showers.
+   The shower energy is recorded in a three-dimensional array of CsI
+   crystals.  Secondary particles from the shower, as well as primary
+   particles which do not interact in the CsI crystals, pass into the
+   hadronic calorimeter.  Here, the remaining energy is collected in a
    three-dimensional array of scintillator-lead sandwiches.
 
    Several aspects of the event may be changed interactively by the user:
@@ -111,11 +111,11 @@ $Id: README 103553 2017-04-18 09:00:54Z gcosmo $
      - initial momentum and angle
      - momentum and angle spreads
      - type of initial particle may be randomized
-   
+
    The initial particle type can be changed using the G4ParticleGun command:
      /gun/particle particleName
-     
-   The UI commands specific to this example are available in /B5 command 
+
+   The UI commands specific to this example are available in /B5 command
    directory:
      /B5/detector/armAngle angle unit
      /B5/field/value field unit
@@ -123,14 +123,14 @@ $Id: README 103553 2017-04-18 09:00:54Z gcosmo $
      /B5/generator/sigmaMomentum value unit
      /B5/generator/sigmaAngle value unit
      /B5/generator/randomizePrimary [true|false]
-     
-   They are implemented in 
-     B5DetectorConstruction::DefineCommands(), 
-     B5MagneticField::DefineCommands() and 
-     B5PrimaryGeneratorAction::DefineCommands() methods 
+
+   They are implemented in
+     B5DetectorConstruction::DefineCommands(),
+     B5MagneticField::DefineCommands() and
+     B5PrimaryGeneratorAction::DefineCommands() methods
    using G4GenericMessenger class.
 
-   In first execution of BeginOfEventAction() 
+   In first execution of BeginOfEventAction()
    the hits collections identifiers are saved in data members of the class
    and used in EndOfEventAction() for accessing
    the hists collections and filling the accounted information in defined
@@ -140,30 +140,30 @@ $Id: README 103553 2017-04-18 09:00:54Z gcosmo $
 
   6- DETECTOR RESPONSE:
 
-     All the information required to simulate and analyze an event is 
-     recorded in hits.  This information is recorded in the following 
+     All the information required to simulate and analyze an event is
+     recorded in hits.  This information is recorded in the following
      sensitive detectors:
 
        - hodoscope:
            particle time
            strip ID, position and rotation
-             (see B5HodoscopeSD, B5HodoscopeHit classes)  
+             (see B5HodoscopeSD, B5HodoscopeHit classes)
 
-       - drift chamber: 
+       - drift chamber:
            particle time
            particle position
            layer ID
-             (see B5DriftChamberSD, B5DriftChamberHit classes)  
- 
-       - electromagnetic calorimeter: 
+             (see B5DriftChamberSD, B5DriftChamberHit classes)
+
+       - electromagnetic calorimeter:
            energy deposited in cell
            cell ID, position and rotation
-             (see B5EMCalorimeterSD, B5EMCalorimeterHit classes)  
-  
-       - hadronic calorimeter:   
+             (see B5EMCalorimeterSD, B5EMCalorimeterHit classes)
+
+       - hadronic calorimeter:
            energy deposited in cell
            cell column ID and row ID, position and rotation
-             (see B5HadCalorimeterSD, B5HadCalorimeterHit classes)  
+             (see B5HadCalorimeterSD, B5HadCalorimeterHit classes)
 
      The hit classes include methods GetAttDefs and CreateAttValues to define
      and then fill extra "HepRep-style" Attributes that the visualization system
@@ -172,7 +172,7 @@ $Id: README 103553 2017-04-18 09:00:54Z gcosmo $
      you will be shown the hit's "Hit Type", "Column ID", "Row ID",
      "Energy Deposited" and "Position".
      These attributes are essentially arbitrary extra pieces of information
-     (integers, doubles or strings) that are carried through the visualization.      
+     (integers, doubles or strings) that are carried through the visualization.
      Each attribute is defined once in G4AttDef object and then is filled for
      each hit in a G4AttValue object.
      These attributes can also be used by commands to filter which hits are drawn:
@@ -184,7 +184,7 @@ $Id: README 103553 2017-04-18 09:00:54Z gcosmo $
   7- ANALYSIS:
 
    The analysis tools are used to accumulate statistics.
-   Histograms and an ntuple are created in B5RunAction::B5RunAction() 
+   Histograms and an ntuple are created in B5RunAction::B5RunAction()
    constructor for the following quantities:
 
    1D histograms:
@@ -194,7 +194,7 @@ $Id: README 103553 2017-04-18 09:00:54Z gcosmo $
    2D histograms:
    - Drift Chamber 1 X vs Y positions
    - Drift Chamber 2 X vs Y positions
-   
+
    Ntuple:
    - Number of hits in Chamber 1
    - Number of hits in Chamber 2
@@ -208,17 +208,17 @@ $Id: README 103553 2017-04-18 09:00:54Z gcosmo $
    The histograms and ntuple are saved in the output file in a format
    according to a technology selected in B5Analysis.hh.
 
-   When running in multi-threading mode, the histograms and ntuple accumulated 
+   When running in multi-threading mode, the histograms and ntuple accumulated
    on threads are automatically merged in a single output file.
 
   8- BUILD OPTIONS:
-  
+
   This example can be built with excluding visualization and/or
-  Geant4 user interface via G4VIS_USE and G4UI_USE compiler options 
+  Geant4 user interface via G4VIS_USE and G4UI_USE compiler options
   (see exampleB5.cc).
   These options are defined by default with Geant4 configuration;
-  they can be switched off at compilation time via the CMake options 
-  G4VIS_NONE or G4UI_NONE or via the environment variables of the 
+  they can be switched off at compilation time via the CMake options
+  G4VIS_NONE or G4UI_NONE or via the environment variables of the
   same name if using GNUmake build.
 
  The following paragraphs are common to all basic examples
@@ -226,7 +226,7 @@ $Id: README 103553 2017-04-18 09:00:54Z gcosmo $
  A- VISUALISATION
 
    The visualization manager is set via the G4VisExecutive class
-   in the main() function in exampleB5.cc.    
+   in the main() function in exampleB5.cc.
    The initialisation of the drawing is done via a set of /vis/ commands
    in the macro vis.mac. This macro is automatically read from
    the main function when the example is used in interactive running mode.
@@ -267,21 +267,21 @@ $Id: README 103553 2017-04-18 09:00:54Z gcosmo $
    for all events and erased at the beginning of the next run.
 
  B- USER INTERFACES
- 
+
    The user command interface is set via the G4UIExecutive class
-   in the main() function in exampleB5.cc 
-   The selection of the user command interface is then done automatically 
-   according to the Geant4 configuration or it can be done explicitly via 
-   the third argument of the G4UIExecutive constructor (see exampleB4a.cc). 
- 
+   in the main() function in exampleB5.cc
+   The selection of the user command interface is then done automatically
+   according to the Geant4 configuration or it can be done explicitly via
+   the third argument of the G4UIExecutive constructor (see exampleB4a.cc).
+
  C- HOW TO RUN
 
     - Execute exampleB5 in the 'interactive mode' with visualization:
         % ./exampleB5
-      and type in the commands from run1.mac line by line:  
+      and type in the commands from run1.mac line by line:
         Idle> /control/verbose 2
         Idle> /tracking/verbose 1
-        Idle> /run/beamOn 10 
+        Idle> /run/beamOn 10
         Idle> ...
         Idle> exit
       or
@@ -289,9 +289,7 @@ $Id: README 103553 2017-04-18 09:00:54Z gcosmo $
         ....
         Idle> exit
 
-    - Execute exampleB5  in the 'batch' mode from macro files 
+    - Execute exampleB5  in the 'batch' mode from macro files
       (without visualization)
         % ./exampleB5 run2.mac
         % ./exampleB5 exampleB5.in > exampleB5.out
-
-	

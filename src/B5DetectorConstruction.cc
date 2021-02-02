@@ -81,7 +81,7 @@ B5DetectorConstruction::B5DetectorConstruction()
   fCellLogical(nullptr), fHadCalScintiLogical(nullptr),
   fMagneticLogical(nullptr),
   fVisAttributes(),
-  fArmAngle(30.*deg), fArmRotation(nullptr), fSecondArmPhys(nullptr)
+  fArmAngle(0.*deg), fArmRotation(nullptr), fSecondArmPhys(nullptr)
 
 {
   fArmRotation = new G4RotationMatrix();
@@ -127,13 +127,17 @@ G4VPhysicalVolume* B5DetectorConstruction::Construct()
                         false,0,checkOverlaps);
   
   // Tube with Local Magnetic field
-  auto magneticSolid = new G4Tubs("magneticTubs",0.,1.*m,1.*m,0.,360.*deg);
+  //auto magneticSolid = new G4Tubs("magneticTubs",0.,1.*m,1.*m,0.,360.*deg);
+  auto magneticSolid = new G4Box("magneticTubs",1.*m,1.*m,1.*m);
   fMagneticLogical = new G4LogicalVolume(magneticSolid, air, "magneticLogical");
 
   // placement of Tube
-  G4RotationMatrix* fieldRot = new G4RotationMatrix();
-  fieldRot->rotateX(90.*deg);
-  new G4PVPlacement(fieldRot,G4ThreeVector(),fMagneticLogical,
+  // G4RotationMatrix* fieldRot = new G4RotationMatrix();
+  // fieldRot->rotateX(90.*deg);
+  // new G4PVPlacement(fieldRot,G4ThreeVector(),fMagneticLogical,
+  //                   "magneticPhysical",worldLogical,
+  //                   false,0,checkOverlaps);
+  new G4PVPlacement(0,G4ThreeVector(),fMagneticLogical,
                     "magneticPhysical",worldLogical,
                     false,0,checkOverlaps);
   
