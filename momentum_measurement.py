@@ -24,7 +24,7 @@ B = tasks[args.task]["B"]
 plot_range = tasks[args.task]["range"]
 #q = 1.60217662/(1e19)
 q=3*(10**8)/(10**9) # Since we want GeV/c
-L=1 # separation between the drift chambers
+L=2 # separation between the drift chambers
 delta_z = 0.5 # separation between the layers in the drift chambers
 mag_left_side = 4.5 # signed distance between start of first chamber and start of mag
 mag_right_side = -2. # signed distance between end of mag and start of second chamber
@@ -86,7 +86,7 @@ def Delta_x(m1,c1,m2,c2): # Calculate the change in x value as the particle pass
 def momentum(m1,c1,m2,c2): # Calculate the momentum of the particle
     theta_1,theta_2 = track_angles(m1,m2)
     delta_x = Delta_x(m1,c1,m2,c2)
-    return (B*q*math.sqrt(L**2 + delta_x**2))/(2*math.sin((theta_1+theta_2)/2))
+    return (B*q*math.sqrt(L**2 + delta_x**2))/(1*math.sin((theta_1+theta_2)/2))
 
 def plot(momenta):
     n, bins, patches = plt.hist(momenta, bins=n_bins)
