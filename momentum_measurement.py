@@ -14,9 +14,20 @@ parser.add_argument('--task', type=str, default ="a", help='Select the task this
 parser.add_argument('--skip_multiple_hits', default=False, action="store_true", help='Skip fitting events with multiple hits in at least one drift chamber layer to make it run quicker.')
 args = parser.parse_args()
 
-tasks = {"a": {"B":0.5, "range": [100*0.9,100*1.1]}, "b_1": {"B": 0.25, "range": [100*0.9,100*1.1]}, "b_2": {"B":1, "range": [100*0.9,100*1.1]}, "c_1": {"B":0.5, "range": [50*0.9,50*1.1]}, "c_2": {"B":0.5, "range": [200*0.9,200*1.1]}}
+tasks = {"a": {"B":0.5, "range": [100*0.95,100*1.05]},
+        "b_1": {"B": 0.25, "range": [100*0.95,100*1.05]}, # vary magnetic field
+        "b_2": {"B":1, "range": [100*0.95,100*1.05]},
+        "c_1": {"B":0.5, "range": [50*0.95,50*1.05]}, # vary initial momentum
+        "c_2": {"B":0.5, "range": [200*0.95,200*1.05]},
+        "d_1": {"B":0.5, "range": [100*0.95,100*1.05]}, #calorimeter tasks
+        "d_2": {"B":0.5, "range": [100*0.95,100*1.05]},
+        "d_3": {"B":0.5, "range": [100*0.95,100*1.05]}}
 n_bins = int(1000/25)
 
+# for calorimeter tasks
+# first is the same as a
+# second is the same as a but with positrons (i.e. only need to change which root file I open)
+# third is again the same but with protons
 
 # define the detector properties
 B = tasks[args.task]["B"]
@@ -108,10 +119,9 @@ def plot_momentum(momenta):
     n, bins, patches = plt.hist(momenta, bins=n_bins)
     bin_width = (bins[-1]-bins[0])/len(n)
     plt.xlabel("P (GeV/c)")
-    plt.ylabel(f"Event Count / ({bin_width} GeV/c)")
-    plt.savefig("task_{}.pdf".format(args.task))
+    plt.ylabel("Event Count / ({:.3f} GeV/c)".format(bin_width))
+    plt.savefig(f"momenta_task_{args.task}.pdf")
     #plt.show()
-    return n, bins
 
 def plot_tracks(m1,c1,coords1,m2,c2,coords2):
     z = np.linspace(0,8)
@@ -129,31 +139,17 @@ def plot_tracks(m1,c1,coords1,m2,c2,coords2):
     plt.legend(["Track 1", "Track 2", "Magnetic Region Left Side", "Magnetic Region Right Side"])
     plt.xlabel("z (m)")
     plt.ylabel("x (m)")
-    plt.savefig("tracks.pdf")
+    plt.savefig(f"tracks_{args.task}.pdf")
     #plt.show()
 
-inf = r.TFile.Open("./B5_{}.root".format(args.task))
-tree = inf.Get("B5")
-momenta = []
-event_counter=0
-first_allowed=0
-for event in tree:
-    print(100*event_counter/1000,"%",end="\r")
-    event_counter+=1
-    if (len(event.Dc1HitsVector_x)==5 and len(event.Dc2HitsVector_x)==5) or not args.skip_multiple_hits:
-        event_params=event_reconstruction(event)
-        if not event_params: continue
-        else:
-            m1,c1,coords1,m2,c2,coords2 = event_params
-            z_intersect = (c2-c1)/(m1-m2)
-            if (z_intersect<5. and z_intersect>3.) or True:
-                if (z_intersect<5. and z_intersect>3.):
-                    first_allowed+=1
-                    if first_allowed==1:
-                        plot_tracks(m1,c1,coords1,m2,c2,coords2)
-                        #print(coords1,len(coords1))
-                m = momentum(m1,c1,m2,c2)
-                if abs(m)>plot_range[0] and abs(m)<plot_range[1]: momenta.append(abs(m))
+def plot_scattering(scattering_angles):
+    plt.clf()
+    n, bins, patches = plt.hist(scattering_angles, bins=n_bins)
+    bin_width = (bins[-1]-bins[0])/len(n)
+    plt.xlabel("Scattering Angle [Rad]")
+    plt.ylabel("Event Count / ({:.3f} Rad)".format(bin_width))
+    plt.savefig(f"scattering_task_{args.task}.pdf")
+    #plt.show()
 
 def resolution(momenta):
     mean = 0
@@ -170,6 +166,76 @@ def resolution(momenta):
     # we can approximate the FWHM as 2.2*sd
     return 2.2*sd
 
-n, bins = plot_momentum(momenta)
-#resolution(n,bins)
-print("{:.3f} GeV".format(resolution(momenta)))
+def scattering(coords):
+    angles = []
+    hit_0 = [coords[0][0], coords[1][0]]
+    for i in range(len(coords[0])-1):
+        hit_1 = [coords[0][i+1], coords[1][i+1]]
+        dx = hit_1[1]-hit_0[1]
+        dz = hit_1[0]-hit_0[0]
+        angle = math.atan(dx/dz)
+        angles.append(angle)
+        hit_0=hit_1
+    #print(angles)
+
+    dangles=[]
+    for i in range(len(angles)-1):
+        dangle = angles[i+1]-angles[i]
+        dangles.append(dangle)
+
+    return dangles
+
+def scattering_rms(angles):
+    rms = 0
+    for angle in angles: rms+=angle**2
+    rms = rms/len(angles)
+    rms = math.sqrt(rms)
+    return rms
+
+def plot_energy(energy,e_type):
+    plt.clf()
+    n, bins, patches = plt.hist(energy, bins=n_bins)
+    bin_width = (bins[-1]-bins[0])/len(n)
+    plt.xlabel(f"{e_type} Energy")
+    plt.ylabel("Event Count / ({:.3f})".format(bin_width))
+    plt.savefig(f"{e_type}_task_{args.task}.pdf")
+    #plt.show()
+
+inf = r.TFile.Open("./B5_{}.root".format(args.task))
+tree = inf.Get("B5")
+momenta = []
+scattering_angles = []
+ecal_energy = []
+hcal_energy = []
+event_counter=0
+first_allowed=0
+for event in tree:
+    print(100*event_counter/1000,"%",end="\r")
+    event_counter+=1
+    if (len(event.Dc1HitsVector_x)==5 and len(event.Dc2HitsVector_x)==5) or not args.skip_multiple_hits:
+        event_params=event_reconstruction(event)
+        if not event_params: continue
+        else:
+            m1,c1,coords1,m2,c2,coords2 = event_params
+            if event_counter==1: plot_tracks(m1,c1,coords1,m2,c2,coords2) # plot an example track reconstruction
+            m = momentum(m1,c1,m2,c2)
+            if abs(m)>plot_range[0] and abs(m)<plot_range[1]:
+                momenta.append(abs(m))
+                #print(coords1)
+                scattering_angles.extend(scattering(coords1))
+                scattering_angles.extend(scattering(coords2))
+                if event.ECEnergy>0: ecal_energy.append(event.ECEnergy)
+                if event.HCEnergy>0: hcal_energy.append(event.HCEnergy)
+
+plot_momentum(momenta)
+plot_scattering(scattering_angles)
+plot_energy(ecal_energy,"ECal")
+plot_energy(hcal_energy,"HCal")
+print(sum(ecal_energy))
+print(sum(hcal_energy))
+
+# estimate the resolution
+outf = open(f"resolution_{args.task}.txt", "w")
+outf.write("Resolution: {:.3f} GeV \n".format(resolution(momenta)))
+outf.write("Scattering RMS: {:.9f} Rad".format(scattering_rms(scattering_angles)))
+outf.close()
