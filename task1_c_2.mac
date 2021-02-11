@@ -1,8 +1,13 @@
+#
 /run/initialize
-# task c_2
+#
+#
+/B5/generator/randomizePrimary FALSE
+#
+#
 /B5/detector/armAngle 0. deg
-/B5/field/value 0.5 tesla
-/B5/generator/momentum 200. GeV
 /gun/particle mu+
+/B5/generator/momentum 200. GeV
+/B5/field/value 0.5 tesla
+/analysis/setFileName B5_c_2.root
 /run/beamOn 1000
-

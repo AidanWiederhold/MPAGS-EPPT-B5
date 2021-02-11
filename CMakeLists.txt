@@ -25,7 +25,7 @@ include(${Geant4_USE_FILE})
 # Locate sources and headers for this project
 # NB: headers are included so they will show up in IDEs
 #
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include 
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include
                     ${Geant4_INCLUDE_DIR})
 file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cc)
 file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh)
@@ -42,16 +42,26 @@ target_link_libraries(exampleB5 ${Geant4_LIBRARIES})
 # relies on these scripts being in the current working directory.
 #
 set(B5_SCRIPTS
-  exampleB5.in 
-  exampleB5.out 
+  exampleB5.in
+  exampleB5.out
   icons.mac
   gui.mac
   run.png
-  init.mac 
-  init_vis.mac 
-  run1.mac 
-  run2.mac 
+  init.mac
+  init_vis.mac
+  run1.mac
+  run2.mac
   vis.mac
+  task1_a.mac
+  task1_b_1.mac
+  task1_b_2.mac
+  task1_c_1.mac
+  task1_c_2.mac
+  task1_d_1.mac
+  task1_d_2.mac
+  task1_d_3.mac
+  task1_e_1.mac
+  task1_e_2.mac
   )
 
 foreach(_script ${B5_SCRIPTS})
@@ -72,4 +82,3 @@ add_custom_target(B5 DEPENDS exampleB5)
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
 #
 install(TARGETS exampleB5 DESTINATION bin)
-
