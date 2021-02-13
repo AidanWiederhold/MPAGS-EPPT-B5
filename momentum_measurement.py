@@ -4,6 +4,8 @@ import math
 import argparse
 import scipy.optimize as opt
 import numpy as np
+import scipy.stats
+#import seaborn as sns
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -99,10 +101,21 @@ def plot_momentum(momenta,task):
     plt.clf()
     n, bins, patches = plt.hist(momenta, bins=n_bins)
     bin_width = (bins[-1]-bins[0])/len(n)
+    I=0
+    for pop in n: I+=bin_width*pop
     plt.xlabel("P (GeV/c)")
     plt.ylabel("Event Count / ({:.2e} GeV/c)".format(bin_width))
+
+    mu, sigma = scipy.stats.norm.fit(momenta)
+    best_fit_line = scipy.stats.norm.pdf(bins, mu, sigma)
+    plt.plot(bins, I*best_fit_line)
+    plt.legend(["Fitted Gaussian", "Measured Momentum"])
+    mid = 0.5*(bins[1:] + bins[:-1])
+    errs = [math.sqrt(i) for i in n]
+    plt.errorbar(mid, n, yerr=errs, fmt='none')
     plt.savefig(f"momenta_task_{task}.pdf")
     #plt.show()
+    return mu,2.2*sigma
 
 def plot_tracks(m1,c1,coords1,m2,c2,coords2,task):
     plt.clf()
@@ -178,7 +191,7 @@ def plot_energy(energy,e_type,task):
     plt.clf()
     n, bins, patches = plt.hist(energy, bins=n_bins)
     bin_width = (bins[-1]-bins[0])/len(n)
-    plt.xlabel(f"{e_type} Energy")
+    plt.xlabel(f"{e_type} Energy [MeV]")
     plt.ylabel("Event Count / ({:.2e})".format(bin_width))
     plt.savefig(f"{e_type}_task_{task}.pdf")
     #plt.show()
@@ -240,7 +253,7 @@ for task in args.tasks:
                     ecal_energy.append(veenergy)
                     hcal_energy.append(vhenergy)
 
-    plot_momentum(momenta,task)
+    fit_mean, fit_fwhm = plot_momentum(momenta,task)
     plot_scattering(scattering_angles,task)
     plot_energy(ecal_energy,"ECal",task)
     plot_energy(hcal_energy,"HCal",task)
@@ -248,19 +261,18 @@ for task in args.tasks:
     scattered_mean = calc_mean(scattering_angles)
     scattered_rms = scattering_rms(scattering_angles)
 
-    shift_down=0
-    shift_up=0
-    for m in momenta:
-        if m>100.: shift_up+=1
-        if m<100.: shift_down+=1
-    # count how many events are below/above 100 GeV/c
-    print(f"Task {task}: No. Below 100 GeV/c = {shift_down}, No. Above 100 GeV/c = {shift_up}")
+    print(calc_mean(momenta)-fit_mean)
+    print(resolution(momenta)-fit_fwhm)
 
     # write out useful measurements
     outf = open(f"resolution_{task}.txt", "w")
     outf.write("Mean Momentum: {:.2e} GeV \n".format(calc_mean(momenta)))
     outf.write("Resolution: {:.2e} GeV \n".format(resolution(momenta)))
     outf.write("Resolution/momentum: {:.2e} \n".format(resolution(momenta)/generated_momentum))
+    outf.write("\n")
+    outf.write("Fitted Mean Momentum: {:.2e} GeV \n".format(fit_mean))
+    outf.write("Fitted Resolution: {:.2e} GeV \n".format(fit_fwhm))
+    outf.write("Fitted Resolution/momentum: {:.2e} \n".format(fit_fwhm/generated_momentum))
     outf.write("\n")
     outf.write("Scattering Mean: {:.2e} Rad \n".format(scattered_mean))
     outf.write("Scattering RMS: {:.2e} Rad \n".format(scattered_rms))
